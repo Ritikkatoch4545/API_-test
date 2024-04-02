@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>www.Myweather.com</title>
+    <style>
+        h1 {
+            text-align: center;
+            font-style: italic;
+            background-color: #7d1aee;
+            padding: 16px 30px;
+            color: rgb(252, 248, 242);
+            text-shadow: 2px 4px 4px rgb(252, 248, 242);
+        }
+        body {
+            background: linear-gradient(90deg, #7d1aee, #e09bf1, #66ffff);
+            background-size: 300% 300%;
+            animation: color 5s ease-in-out infinite;
+            font-family: Arial, sans-serif;
+         
+        }
+
+        @keyframes color {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0 50%; } 
+        }
+        
+
+        .container {
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        table {
+            width: 120%;
+            border-collapse: collapse;
+          margin-left: 10px;
+          
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            
+        }
+        td{
+            color: rgb(10, 10, 10);
+        }
+        th {
+            background-color: #7d1aee;
+            color: white;
+            text-align: center;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #7d1aee;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #6c17cc;
+        }
+        .tabledata {
+            display: none;
+        }
+        
+    </style>
+</head>
+<body>
+<h1 class="heading">Weather details</h1>
+<div class="container">
+    <form id="searchForm">
+        <input type="text" id="cityInput" placeholder="Enter city name">
+        <input type="submit" value="Search">
+    </form>
+    <br>
+    <table class="tabledata">
+        <thead>
+        <tr>
+            <th>City name</th>
+            <th>Weather status</th>
+            <th>Humidity</th>
+            <th>Temperature</th>
+            <th>Visibility</th>
+            <th>Sunset and sunrise time</th>
+        </tr>
+        </thead>
+        <tbody class="data">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    
+
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const city = document.getElementById("cityInput").value;
+        fetch(`https://api.openweathermap.org/data/2.5/weather?APPID=256602efd7915a05fea15561fbfa0ad0&q=${city}&units=metric`)
+            .then((response) => response.json())
+            .then((data) => {
+                let data1 = `<tr>
+                        <td>${data.name}</td>
+                        <td>${data.weather[0].main}</td>
+                        <td>${data.main.humidity}</td>
+                        <td>${data.main.temp}</td>
+                        <td>${data.visibility}</td>
+                        <td>${new Date(data.sys.sunrise * 1000).toLocaleTimeString()} / ${new Date(data.sys.sunset * 1000).toLocaleTimeString()}</td>
+                    </tr>`;
+                document.querySelector(".data").innerHTML = data1;
+                document.querySelector(".tabledata").style.display = 'table';
+         
+            })
+            .catch((error) => {
+                console.log("There is some error", error);
+            });
+    });
+</script>
+</body>
+</html>

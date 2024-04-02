@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>www.NotesApp.com</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
+    <style>
+        body {
+    padding: 20px;
+    background: linear-gradient(90deg, #7d1aee, #66ffff);
+}
+
+.container {
+    color: bisque;
+    max-width: 800px; 
+    margin: 0 auto; 
+}
+
+.note-container {
+    margin-bottom: 20px;
+}
+
+.input-group {
+    width: 100%; 
+}
+
+.input-group-append {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.table {
+    display: none;
+    width: 100%;
+}
+
+.table th {
+    color: antiquewhite;
+    width: 50%;
+    text-align: center; 
+}
+
+td {
+    color: white; 
+    text-align: center; 
+}
+
+
+
+
+    
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">Simple Notes App</h1>
+    <br>
+    <div class="note-container">
+        <div class="input-group">
+            <input type="text" class="form-control" id="noteInput" placeholder="Enter your note...">
+            <div class="input-group-append">
+                <button class="btn btn-dark" id="addNoteBtn">Add Note</button>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Note</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="noteList">
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+
+    let notes =  [];
+
+  
+    function displayNotes() {
+        const noteList = document.getElementById('noteList');
+        noteList.innerHTML = '';
+
+        notes.forEach((note, index) => {
+            const row = `<tr>
+                    <td style = "color : white;">${note}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editNote(${index})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteNote(${index})">Delete</button>
+                    </td>
+                </tr>`;
+            noteList.innerHTML += row;
+        });
+    }
+
+
+    document.getElementById('addNoteBtn').addEventListener('click', function() {
+       
+       document.querySelector(".table").style.display = 'block';
+        const noteInput = document.getElementById('noteInput');
+        const noteValue = noteInput.value.trim();
+
+        if (noteValue !== '') {
+            notes.push(noteValue);
+            localStorage.setItem('notes', JSON.stringify(notes));
+            noteInput.value = '';
+            displayNotes();
+        } else {
+            Swal.fire('Oops...', 'Please enter a note!', 'error');
+        }
+    });
+
+    
+    function editNote(index) {
+        Swal.fire({
+            title: 'Edit your note',
+            input: 'text',
+            inputValue: notes[index],
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+            cancelButtonText: 'Cancel',
+            preConfirm: (newNote) => {
+                if (!newNote.trim()) {
+                    Swal.showValidationMessage('Note cannot be empty');
+                }
+                return newNote.trim();
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                notes[index] = result.value;
+                localStorage.setItem('notes', JSON.stringify(notes));
+                displayNotes();
+            }
+        });
+    }
+
+
+    function deleteNote(index) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                notes.splice(index, 1);
+                localStorage.setItem('notes', JSON.stringify(notes));
+                displayNotes();
+                Swal.fire('Deleted!', 'Your note has been deleted.', 'success');
+            }
+        });
+    }
+
+    displayNotes();
+</script>
+</body>
+</html>
